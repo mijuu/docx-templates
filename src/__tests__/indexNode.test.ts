@@ -980,6 +980,27 @@ Morbi dignissim consequat ex, non finibus est faucibus sodales. Integer sed just
         // Render to an object and compare with snapshot.
         expect(await createReport(opts, 'JS')).toMatchSnapshot();
       });
+
+      it('102 custom delimiters that may be confused with JS syntax', async () => {
+        // Issue #102
+        expect(
+          await createReport(
+            {
+              noSandbox,
+              template: await fs.promises.readFile(
+                path.join(
+                  __dirname,
+                  'fixtures',
+                  'customDelimitersJSsyntax.docx'
+                )
+              ),
+              data: {},
+              cmdDelimiter: ['{', '}'],
+            },
+            'JS'
+          )
+        ).toMatchSnapshot();
+      });
     });
   });
 });
