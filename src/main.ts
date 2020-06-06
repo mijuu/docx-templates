@@ -196,7 +196,7 @@ async function createReport(
   DEBUG && log.debug(`postProcessing document.xml`);
   const report1b = createOptions.postProcessor(
     report1,
-    `${templatePath}/document.xml`
+    `${templatePath}/${mainDocument}`
   );
 
   DEBUG && log.debug('Converting report to XML...');
