@@ -173,3 +173,21 @@ it('004: can inject an image in the document header (regression test for #113)',
   // the main document
   return expect(createReport(opts)).resolves.toBeInstanceOf(Uint8Array);
 });
+
+it('005: IMAGE in FOR loop bug', async () => {
+  // Repro case for https://github.com/guigrpa/docx-templates/issues/128
+  const template = await fs.promises.readFile(
+    path.join(__dirname, 'fixtures', 'imageInForLoop.docx')
+  );
+
+  // TODO: removeme
+  await fs.promises.writeFile(
+    'test.docx',
+    await createReport({
+      template,
+      data: {
+        companies: ['a', 'b'],
+      },
+    })
+  );
+});
