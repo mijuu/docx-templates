@@ -91,6 +91,14 @@ async function createReport(
     failFast: options.failFast == null ? true : options.failFast,
     rejectNullish:
       options.rejectNullish == null ? false : options.rejectNullish,
+    postProcessor:
+      options.postProcessor != null
+        ? options.postProcessor
+        : (root, filename) => {
+            DEBUG &&
+              log.debug(`Default Postprocessor: no changes to ${filename}`);
+            return root;
+          },
   };
   const xmlOptions = { literalXmlDelimiter };
 
@@ -184,8 +192,15 @@ async function createReport(
   //     attachLevel: 'debug',
   //     ignoreKeys: ['_parent', '_fTextNode', '_attrs'],
   //   });
+
+  DEBUG && log.debug(`postProcessing document.xml`);
+  const report1b = createOptions.postProcessor(
+    report1,
+    `${templatePath}/document.xml`
+  );
+
   DEBUG && log.debug('Converting report to XML...');
-  const reportXml = buildXml(report1, xmlOptions);
+  const reportXml = buildXml(report1b, xmlOptions);
   if (_probe === 'XML') return reportXml;
   DEBUG && log.debug('Writing report...');
   zipSetText(zip, `${templatePath}/${mainDocument}`, reportXml);
@@ -235,7 +250,11 @@ async function createReport(
     images = merge(images, images2) as Images;
     links = merge(links, links2) as Links;
     htmls = merge(htmls, htmls2) as Htmls;
-    const xml = buildXml(report2, xmlOptions);
+
+    DEBUG && log.debug(`postProcessing ${filePath}`);
+    const report2b = createOptions.postProcessor(report2, `${filePath}`);
+
+    const xml = buildXml(report2b, xmlOptions);
     zipSetText(zip, filePath, xml);
 
     numImages += Object.keys(images2).length;

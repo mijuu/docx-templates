@@ -100,7 +100,14 @@ export type UserOptions = {
    * When set to `true`, this setting ensures `createReport` throws a `NullishCommandResultError` when the result of an INS, HTML, IMAGE, or LINK command is `null` or `undefined`. This is useful as nullish return values usually indicate a mistake in the template or the invoking code. Defaults to `false`.
    */
   rejectNullish?: boolean;
+
+  /**
+   * user-defined postProcessor
+   */
+  postProcessor?: PostProcessorFunc;
 };
+
+type PostProcessorFunc = (root: Node, filename: string) => Node;
 
 export type CreateReportOptions = {
   cmdDelimiter: [string, string];
@@ -111,6 +118,7 @@ export type CreateReportOptions = {
   additionalJsContext: Object;
   failFast: boolean;
   rejectNullish: boolean;
+  postProcessor: PostProcessorFunc;
 };
 
 export type Context = {
