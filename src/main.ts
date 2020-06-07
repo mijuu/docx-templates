@@ -160,6 +160,7 @@ async function createReport(
   // ---------------------------------------------------------
   // Process document.xml:
   // - Generate the report
+  // - Apply user-defined postProcessor function, if any
   // - Build output XML and write it to disk
   // - Images
   // ---------------------------------------------------------
@@ -179,28 +180,23 @@ async function createReport(
     throw result.errors;
   }
   const {
-    report: report1,
+    report: raw_report,
     images: images1,
     links: links1,
     htmls: htmls1,
   } = result;
-  if (_probe === 'JS') return report1;
-
-  // DEBUG &&
-  //   log.debug('Report', {
-  //     attach: report,
-  //     attachLevel: 'debug',
-  //     ignoreKeys: ['_parent', '_fTextNode', '_attrs'],
-  //   });
-
-  DEBUG && log.debug(`postProcessing document.xml`);
-  const report1b = createOptions.postProcessor(
-    report1,
+  DEBUG &&
+    log.debug(
+      `Applying user-defined postProcessor function to document.xml, if set`
+    );
+  const report = createOptions.postProcessor(
+    raw_report,
     `${templatePath}/${mainDocument}`
   );
+  if (_probe === 'JS') return report;
 
   DEBUG && log.debug('Converting report to XML...');
-  const reportXml = buildXml(report1b, xmlOptions);
+  const reportXml = buildXml(report, xmlOptions);
   if (_probe === 'XML') return reportXml;
   DEBUG && log.debug('Writing report...');
   zipSetText(zip, `${templatePath}/${mainDocument}`, reportXml);
