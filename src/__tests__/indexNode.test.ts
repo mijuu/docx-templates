@@ -897,13 +897,9 @@ Morbi dignissim consequat ex, non finibus est faucibus sodales. Integer sed just
           noSandbox,
           template,
           data: {
-            companies: [
-              {
-                name: 'FIRST',
-              },
-              {
-                name: 'SECOND',
-              },
+            links: [
+              { url: 'https://www.google.com/', name: 'Google' },
+              { url: 'https://www.youtube.com/', name: 'Youtube' },
             ],
           },
         };
