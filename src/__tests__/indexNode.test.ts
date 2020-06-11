@@ -1044,3 +1044,20 @@ Morbi dignissim consequat ex, non finibus est faucibus sodales. Integer sed just
     });
   });
 });
+
+test('issue #134: Exec without sandbox', async () => {
+  const template = await fs.promises.readFile(
+    path.join(__dirname, 'fixtures', 'execNoSandbox.docx')
+  );
+  const result = await createReport(
+    {
+      template,
+      data: {
+        name: 'myname',
+      },
+      noSandbox: true, // <- this cause error
+    },
+    'JS'
+  );
+  expect(result).toMatchSnapshot();
+});
