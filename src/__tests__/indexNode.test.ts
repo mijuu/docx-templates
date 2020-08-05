@@ -1046,6 +1046,22 @@ Morbi dignissim consequat ex, non finibus est faucibus sodales. Integer sed just
         expect(result).toMatchSnapshot();
       });
 
+      it('143 new line character inside a variable does not work', async () => {
+        const template = await fs.promises.readFile(
+          path.join(__dirname, 'fixtures', 'issue143Repro.docx')
+        );
+
+        const wordBuffer = await createReport({
+          template: template,
+          cmdDelimiter: ['{{ ', ' }}'],
+          data: { address: 'City\nCountry' },
+          // processLineBreaks: true, // true is the default
+        });
+
+        fs.writeFileSync('test.docx', wordBuffer);
+        expect(false).toBeTruthy();
+      });
+
       describe('rejectNullish setting', () => {
         it('INS', async () => {
           const template = await fs.promises.readFile(
