@@ -291,6 +291,21 @@ export async function walkTemplate(
         delete ctx.pendingHtmlNode;
       }
 
+      // vertically merge cell
+      if (
+        ctx.pendingVMergeNode &&
+        !nodeOut._fTextNode && // Flow-prevention
+        nodeOut._tag === 'w:t'
+      ) {
+        const vMergeNode = ctx.pendingVMergeNode;
+        const parent = nodeOut._parent?._parent?._parent;
+        if (parent) {
+          vMergeNode._parent = parent;
+          parent._children[0]._children.push(vMergeNode);
+        }
+        delete ctx.pendingVMergeNode;
+      }
+
       // `w:tc` nodes shouldn't be left with no `w:p` children; if that's the
       // case, add an empty `w:p` inside
       if (
@@ -564,6 +579,18 @@ const processCmd: CommandProcessor = async (
           throw new NullishCommandResultError(cmdRest);
         }
         if (html != null) await processHtml(ctx, html);
+      }
+
+      // vertically merge tabel cell
+    } else if (cmdName === 'V_MERGE') {
+      if (!isLoopExploring(ctx)) {
+        processVMerge(ctx, false);
+      }
+
+      // restart vertically merge tabel cell
+    } else if (cmdName === 'V_MERGE_RESTART') {
+      if (!isLoopExploring(ctx)) {
+        processVMerge(ctx, true);
       }
 
       // Invalid command
@@ -859,6 +886,11 @@ const processHtml = async (ctx: Context, data: string) => {
   const node = newNonTextNode;
   const html = node('w:altChunk', { 'r:id': relId });
   ctx.pendingHtmlNode = html;
+};
+
+const processVMerge = async (ctx: Context, isRestart: Boolean) => {
+  const node = newNonTextNode;
+  ctx.pendingVMergeNode = isRestart ?  node('w:vMerge', {'w:val': 'restart'}) : node('w:vMerge', {});
 };
 
 // ==========================================

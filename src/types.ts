@@ -133,6 +133,7 @@ export type Context = {
   pendingHtmlNode?: TextNode | NonTextNode;
   htmlId: number;
   htmls: Htmls;
+  pendingVMergeNode?: NonTextNode;
   vars: { [name: string]: VarValue };
   loops: Array<LoopStatus>;
   fJump: boolean;
@@ -202,4 +203,6 @@ export const BUILT_IN_COMMANDS = [
   'IMAGE',
   'LINK',
   'HTML',
+  'V_MERGE',
+  'V_MERGE_RESTART',
 ] as const;
