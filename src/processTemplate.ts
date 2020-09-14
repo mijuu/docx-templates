@@ -108,6 +108,7 @@ type ReportOutput =
       images: Images;
       links: Links;
       htmls: Htmls;
+      jsSandbox: object | undefined;
     }
   | {
       status: 'errors';
@@ -399,6 +400,7 @@ export async function walkTemplate(
     images: ctx.images,
     links: ctx.links,
     htmls: ctx.htmls,
+    jsSandbox: ctx.jsSandbox,
   };
 }
 

@@ -107,7 +107,7 @@ async function createReport(
 async function createReport(
   options: UserOptions,
   _probe?: 'JS' | 'XML'
-): Promise<Node | string | Uint8Array> {
+): Promise<Node | string | Uint8Array| object> {
   logger.debug('Report options:', { attach: options });
   const { template, data, queryVars } = options;
   const literalXmlDelimiter =
@@ -165,12 +165,19 @@ async function createReport(
     images: images1,
     links: links1,
     htmls: htmls1,
+    jsSandbox
   } = result;
-  if (_probe === 'JS') return report1;
+  if (_probe === 'JS') return {
+    data: report1,
+    jsSandbox
+  };
 
   logger.debug('Converting report to XML...');
   const reportXml = buildXml(report1, xmlOptions);
-  if (_probe === 'XML') return reportXml;
+  if (_probe === 'XML') return {
+    data: reportXml,
+    jsSandbox
+  };
   logger.debug('Writing report...');
   zipSetText(zip, `${TEMPLATE_PATH}/${mainDocument}`, reportXml);
 
@@ -270,7 +277,10 @@ async function createReport(
 
   logger.debug('Zipping...');
   const output = await zipSave(zip);
-  return output;
+  return {
+    data: output,
+    jsSandbox
+  };
 }
 
 /**
